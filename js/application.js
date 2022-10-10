@@ -1,45 +1,40 @@
-var calculateSubTotal = function (ele) {
-  var quantityItem = Number(`${$(ele).find(".item-quantity input").val()}`);
-  var priceItem = Number(
-    `${$(ele).children(".item-price").text()}`.replace(/[^0-9.-]+/g, "")
-  );
+//GETS THE TOTAL PRICE OF ALL THE ITEMS
+var total = 0;
 
-  var subTotal = quantityItem * priceItem;
-  if (subTotal >= 0) {
-    $(ele)
-      .children(".total-item-price")
-      .html(`$${parseFloat(Math.round(subTotal * 100) / 100).toFixed(2)}`);
+var totalPrice = function () {
+  var prices = $(".item-price");
+  var qtys = $(".quantity");
+
+  total = 0;
+
+  for (i = 0; i < qtys.length; i++) {
+    var price = Number($(prices[i]).text().replace(/\$/, ""));
+    var subtotal = Number($(qtys[i]).val()) * price;
+    if (subtotal != 0) {
+      $($(".total-item-price")[i]).text("$" + subtotal);
+    } else {
+      $($(".total-item-price")[i]).text("$--.--");
+    }
+    total += subtotal;
+  }
+  $("#totalCart").text("$ " + total);
+  var addspace = "";
+  var spaces = total.toString();
+  spaces = spaces.length;
+  spaces = 12 - spaces;
+  for (i = 0; i < spaces; i++) {
+    addspace += " ";
   }
 
-  return subTotal;
-};
-var sum = function (acc, x) {
-  return acc + x;
-};
-var updateTotalCart = function () {
-  var allSubTotals = [];
-
-  $("tbody tr").each(function (i, ele) {
-    var subTotal = calculateSubTotal(ele);
-    allSubTotals.push(subTotal || 0); // push result of subtotal function to array or a zero if NaN
-  });
-
-  if (allSubTotals.length == 0) {
-    $("#totalCart").html(`$--.--`);
-  } else {
-    var totalCart = allSubTotals.reduce(sum);
-    $("#totalCart").html(
-      `$${parseFloat(Math.round(totalCart * 100) / 100).toFixed(2)}`
-    );
-  }
+  return total;
 };
 $(document).ready(function () {
-  updateTotalCart();
+  totalPrice();
   var timeout;
   $("body").on("input", "tr input", function () {
     clearTimeout(timeout);
     timeout = setTimeout(function () {
-      updateTotalCart();
+      totalPrice();
     }, 500);
   });
 
@@ -49,22 +44,25 @@ $(document).ready(function () {
     <td class="item-name">${name}</td>
     <td class="item-price">$${cost}</td>
     <td class="item-quantity">
-      <label>QTY</label><input type="number" min="0" value="1"/>
-      <button class="btn btn-danger btn-sm remove">Remove</button>
+    <label>QTY</label
+    ><input class="quantity" type="number" min="0" value="1" />
+    <button class="btn btn-danger btn-sm remove">Remove</button>
     </td>
     <td class="total-item-price"></td>
     </tr>
     `);
-    updateTotalCart();
+    totalPrice();
   };
 
   $("body").on("click", ".remove", function (event) {
     $(this).closest("tr").remove();
-    updateTotalCart();
+    totalPrice();
   });
-  $(document).on("click", "#fork", function () {
+  $(document).on("click", "#add", function () {
     addItem($("#name").val(), $("#cost").val());
-    updateTotalCart();
+    totalPrice();
+
+    //CLEARS THE INPUTS AND PUTS THE CURSUR BACK IN THE 'ITEM' INPUT FIELD
     document.getElementById("name").value = "";
     document.getElementById("cost").value = "";
     document.getElementById("name").focus();
