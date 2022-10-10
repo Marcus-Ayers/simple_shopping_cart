@@ -1,9 +1,5 @@
 var calculateSubTotal = function (ele) {
-  //var quantityItem = parseFloat($(ele).find(".quantity input").val());
-  //var quantityItem = parseFloat(Math.round($(ele).find(".quantity input").val() * 100) / 100).toFixed(2);
   var quantityItem = Number(`${$(ele).find(".item-quantity input").val()}`);
-  //var priceItem = parseFloat($(ele).children(".price").text());
-  //var priceItem = parseFloat(Math.round($(ele).children(".price").text() * 100) / 100).toFixed(2);
   var priceItem = Number(
     `${$(ele).children(".item-price").text()}`.replace(/[^0-9.-]+/g, "")
   );
@@ -69,5 +65,9 @@ $(document).ready(function () {
   $(document).on("click", "#fork", function () {
     addItem($("#name").val(), $("#cost").val());
     updateTotalCart();
+    document.getElementById("name").value = "";
+    document.getElementById("cost").value = "";
+    document.getElementById("name").focus();
+    document.getElementById("name").select();
   });
 });
